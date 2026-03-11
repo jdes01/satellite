@@ -353,7 +353,7 @@ window.doUnfollow = async function (target) {
     for (const postId of index.posts) {
       try {
         const resp = await fetch(
-          `https://${domain}/satellite/posts/${postId}.json.enc`
+          `https://${domain}/${repo}/posts/${postId}.json.enc`
         );
         if (!resp.ok) continue;
         const encrypted = new Uint8Array(await resp.arrayBuffer());
