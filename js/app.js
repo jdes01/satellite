@@ -417,7 +417,9 @@ async function publishPost(post) {
   const encrypted = crypto.encryptData(
     new TextEncoder().encode(JSON.stringify(post)), contentKey
   );
-  const index = await feed.fetchPostIndexOrEmpty(getDomain());
+  let index;
+  try { index = await github.fetchFileJson(token, repo, 'posts/index.json'); }
+  catch { index = { posts: [] }; }
   index.posts.unshift(post.id);
   await github.pushFiles(token, repo, [
     github.binaryEntry(`posts/${post.id}.json.enc`, encrypted),
@@ -474,7 +476,9 @@ window.doFollow = async function () {
       encrypted_key: crypto.toBase64(sealed),
     };
     // Update follow list
-    const list = await feed.fetchFollowListOrEmpty(domain);
+    let list;
+    try { list = await github.fetchFileJson(token, repo, 'follows/index.json'); }
+    catch { list = { follows: [] }; }
     if (!list.follows.includes(target)) {
       list.follows.push(target);
     }
@@ -508,7 +512,9 @@ window.doUnfollow = async function (target) {
     const oldContentKey = getContentKey();
 
     // Fetch post index
-    const index = await feed.fetchPostIndexOrEmpty(domain);
+    let index;
+    try { index = await github.fetchFileJson(token, repo, 'posts/index.json'); }
+    catch { index = { posts: [] }; }
 
     // Generate new content key
     const newContentKey = crypto.generateContentKey();
@@ -534,7 +540,9 @@ window.doUnfollow = async function (target) {
     }
 
     // Update follow list
-    const list = await feed.fetchFollowListOrEmpty(domain);
+    let list;
+    try { list = await github.fetchFileJson(token, repo, 'follows/index.json'); }
+    catch { list = { follows: [] }; }
     list.follows = list.follows.filter((d) => d !== target);
 
     // Re-create key envelopes for remaining followers

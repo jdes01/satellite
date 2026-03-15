@@ -69,6 +69,15 @@ export async function getCommitSha(token, repo) {
   return (await resp.json()).object.sha;
 }
 
+export async function fetchFileJson(token, repo, path) {
+  const resp = await fetch(
+    `https://api.github.com/repos/${repo}/contents/${path}`,
+    { headers: ghHeaders(token) }
+  );
+  if (!resp.ok) throw new Error(`Failed to fetch ${path}`);
+  return JSON.parse(atob((await resp.json()).content));
+}
+
 export async function resetToCommit(token, repo, sha) {
   const resp = await fetch(`https://api.github.com/repos/${repo}/git/refs/heads/main`, {
     method: 'PATCH',
