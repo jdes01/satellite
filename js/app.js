@@ -397,6 +397,7 @@ window.doFollow = async function () {
   const { domain, token, repo } = getState();
   const target = document.getElementById('follow-domain-input').value.trim();
   if (!target) return;
+  if (target === domain) { setStatus('Go make some friends!'); return; }
 
   const btn = document.getElementById('follow-btn');
   btn.disabled = true;
